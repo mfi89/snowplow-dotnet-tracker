@@ -212,7 +212,10 @@ namespace Snowplow.Tracker
                 }
                 else
                 {
-                    Log.Logger.Warn(String.Format("POST request to {0} finished with status: '{1}'", collectorUri, statusCode));
+                    OfflineHandle(data);
+
+                    Log.Logger.Warn(String.Format("POST request to {0} finished with status: '{1}'. Sent to backup emitter.", collectorUri, statusCode));
+                    
                     if (onFailure != null)
                     {
                         onFailure(0, tempBuffer);
@@ -236,7 +239,8 @@ namespace Snowplow.Tracker
                     }
                     else
                     {
-                        Log.Logger.Warn(String.Format("GET request to {0} finished with status: '{1}'", collectorUri, statusCode));
+                        OfflineHandle(payload);
+                        Log.Logger.Warn(String.Format("GET request to {0} finished with status: '{1}'. Sent to backup emitter.", collectorUri, statusCode));
                         unsentRequests.Add(payload);
                     }
                 }
@@ -300,7 +304,6 @@ namespace Snowplow.Tracker
             }
             catch (WebException we)
             {
-                OfflineHandle(payload);
                 return noResponseMessage;
             }
 
@@ -347,7 +350,6 @@ namespace Snowplow.Tracker
                 var response = (HttpWebResponse)we.Response;
                 if (response == null)
                 {
-                    OfflineHandle(payload);
                     return noResponseMessage;
                 }
                 response.Close();
@@ -405,6 +407,7 @@ namespace Snowplow.Tracker
                         allSent = false;
                         System.Messaging.Message evt = messageEnumerator.RemoveCurrent();
                         Input(jss.Deserialize<Dictionary<string, string>>(evt.Body.ToString()));
+
                     }
                 }
             }
