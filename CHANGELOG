@@ -1,4 +1,8 @@
+Version 0.2.0 (2015-xx-xx)
+--------------------------
+Started adding all failed events to the MSMQ queue, thanks @digitaltouch! (#14)
+Added lock around AsyncEmitter.Flush(), thanks @digitaltouch! (#16)
+
 Version 0.1.0 (2014-09-29)
 --------------------------
 Initial release
-
